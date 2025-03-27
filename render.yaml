@@ -1,22 +1,12 @@
 services:
   - type: web
-    name: voice-game-server
+    name: voice-game
     env: node
     plan: free
-    buildCommand: cd server && npm install && npm run build
-    startCommand: cd server && npm start
+    buildCommand: npm install && npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: CORS_ORIGIN
         value: https://voice-game-web.onrender.com
-
-  - type: web
-    name: voice-game-web
-    runtime: static
-    plan: free
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./out
-    envVars:
-      - key: NEXT_PUBLIC_SOCKET_URL
-        value: https://voice-game-server.onrender.com 
