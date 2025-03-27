@@ -10,7 +10,7 @@ services:
       - key: CORS_ORIGIN
         value: https://voice-game-web.onrender.com
 
-  - type: static
+  - type: static-site
     name: voice-game-web
     buildCommand: npm install && npm run build
     staticPublishPath: ./out
