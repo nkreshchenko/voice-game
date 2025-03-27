@@ -70,7 +70,9 @@ export const useGameStore = create<GameState>((set, get) => ({
       const audioContext = new AudioContext()
       
       // Connect to WebSocket server
-      const socket = io(SOCKET_URL)
+      const socket = io(SOCKET_URL, {
+        path: '/api/socket'
+      })
       
       // Generate a random color for this player
       const myColor = `hsl(${Math.random() * 360}, 70%, 60%)`

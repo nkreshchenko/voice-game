@@ -1,6 +1,7 @@
 import { Server as SocketIOServer } from 'socket.io'
 import { Server as NetServer } from 'http'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { Socket } from 'net'
 
 export const config = {
   api: {
@@ -13,19 +14,24 @@ interface Player {
   color: string
 }
 
+interface ExtendedSocket extends Socket {
+  server: any;
+}
+
+interface ExtendedNextApiResponse extends NextApiResponse {
+  socket: ExtendedSocket;
+}
+
 const players = new Map<string, Player>()
 
-const ioHandler = (req: NextApiRequest, res: NextApiResponse) => {
-  if (!(res.socket as any).server.io) {
+const ioHandler = (req: NextApiRequest, res: ExtendedNextApiResponse) => {
+  if (!res.socket.server.io) {
     console.log('*First use, starting socket.io')
     
-    const httpServer: NetServer = (res.socket as any).server
+    const httpServer: NetServer = res.socket.server as any
     const io = new SocketIOServer(httpServer, {
       path: '/api/socket',
-      cors: {
-        origin: '*',
-        methods: ['GET', 'POST'],
-      },
+      addTrailingSlash: false,
     })
 
     io.on('connection', (socket) => {
@@ -80,8 +86,9 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponse) => {
       })
     })
 
-    ;(res.socket as any).server.io = io
+    res.socket.server.io = io
   }
+
   res.end()
 }
 
