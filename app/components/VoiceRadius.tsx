@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { Mesh, CircleGeometry } from 'three'
+import { Mesh } from 'three'
 import { useGameStore } from '../stores/gameStore'
 
 export function VoiceRadius() {

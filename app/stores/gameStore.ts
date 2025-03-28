@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { Vector3 } from 'three'
-import io from 'socket.io-client'
+import io, { Socket } from 'socket.io-client'
 
 interface Player {
   position: Vector3
@@ -14,7 +14,7 @@ interface GameState {
   players: Map<string, Player>
   audioContext?: AudioContext
   audioStream?: MediaStream
-  socket?: any
+  socket?: Socket
   updatePosition: (newPosition: { x: number; y: number; z: number }) => void
   initializeAudio: () => Promise<void>
 }
@@ -22,7 +22,7 @@ interface GameState {
 const SOCKET_URL = '/api/socket'
 
 const createPeerConnection = (
-  socket: any,
+  socket: Socket,
   targetId: string,
   localStream: MediaStream,
   onStream: (stream: MediaStream) => void
@@ -88,11 +88,12 @@ export const useGameStore = create<GameState>((set, get) => ({
         set({ players: new Map(players) })
 
         // Initialize WebRTC connection
-        if (get().audioStream) {
+        const audioStream = get().audioStream;
+        if (audioStream) {
           const pc = createPeerConnection(
             socket,
             playerId,
-            get().audioStream,
+            audioStream,
             (remoteStream) => {
               const player = get().players.get(playerId)
               if (player) {
@@ -113,11 +114,12 @@ export const useGameStore = create<GameState>((set, get) => ({
       socket.on('voice-offer', async (fromId: string, description: RTCSessionDescription) => {
         const players = get().players
         const player = players.get(fromId)
-        if (player && get().audioStream) {
+        const audioStream = get().audioStream;
+        if (player && audioStream) {
           const pc = createPeerConnection(
             socket,
             fromId,
-            get().audioStream,
+            audioStream,
             (remoteStream) => {
               player.audioStream = remoteStream
               set({ players: new Map(players) })

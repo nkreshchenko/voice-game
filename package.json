@@ -6,7 +6,8 @@
     "dev": "ts-node --project tsconfig.server.json server.ts",
     "build": "next build",
     "start": "NODE_ENV=production ts-node --project tsconfig.server.json server.ts",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test-build": "next build"
   },
   "dependencies": {
     "@react-three/drei": "^10.0.5",

@@ -14,8 +14,12 @@ interface Player {
   color: string
 }
 
+interface ServerWithIO {
+  io: SocketIOServer;
+}
+
 interface ExtendedSocket extends Socket {
-  server: any;
+  server: ServerWithIO;
 }
 
 interface ExtendedNextApiResponse extends NextApiResponse {
@@ -28,7 +32,7 @@ const ioHandler = (req: NextApiRequest, res: ExtendedNextApiResponse) => {
   if (!res.socket.server.io) {
     console.log('*First use, starting socket.io')
     
-    const httpServer: NetServer = res.socket.server as any
+    const httpServer = res.socket.server as unknown as NetServer
     const io = new SocketIOServer(httpServer, {
       path: '/api/socket',
       addTrailingSlash: false,
