@@ -4,7 +4,11 @@ const { parse } = require('url')
 const next = require('next')
 const { Server: SocketIOServer } = require('socket.io')
 
+// Determine environment
 const dev = process.env.NODE_ENV !== 'production'
+console.log(`Running in ${dev ? 'development' : 'production'} mode`)
+
+// Initialize Next.js
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
@@ -16,14 +20,21 @@ interface Player {
 const players = new Map<string, Player>()
 
 app.prepare().then(() => {
+  // Create HTTP server
   const server = createServer((req, res) => {
     const parsedUrl = parse(req.url!, true)
     handle(req, res, parsedUrl)
   })
 
+  // Initialize Socket.IO with consistent configuration
   const io = new SocketIOServer(server, {
     path: '/api/socket',
     addTrailingSlash: false,
+    // Same CORS config in both environments
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST']
+    }
   })
 
   io.on('connection', (socket) => {
@@ -78,8 +89,10 @@ app.prepare().then(() => {
     })
   })
 
+  // Use port from environment or fallback to 3000
   const PORT = process.env.PORT || 3000
   server.listen(PORT, () => {
-    console.log(`> Ready on http://localhost:${PORT}`)
+    console.log(`> Server ready on http://localhost:${PORT}`)
+    console.log(`> Socket.IO path: /api/socket`)
   })
 }) 

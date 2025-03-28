@@ -3,10 +3,8 @@ services:
     name: voice-game
     env: node
     plan: free
-    buildCommand: npm install && npm install -g ts-node && NEXT_IGNORE_TYPESCRIPT_ERRORS=true npm run build
+    buildCommand: npm install && npm install -g ts-node && npm run build
     startCommand: NODE_ENV=production ts-node --project tsconfig.server.json server.ts
     envVars:
       - key: NODE_ENV
         value: production
-      - key: CORS_ORIGIN
-        value: https://voice-game-web.onrender.com
